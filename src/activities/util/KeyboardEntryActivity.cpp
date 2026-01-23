@@ -130,8 +130,8 @@ void KeyboardEntryActivity::handleKeyPress() {
 
   if (maxLength == 0 || text.length() < maxLength) {
     text += c;
-    // Auto-disable shift after typing a letter
-    if (shiftActive && ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) {
+    // Auto-disable shift after typing a character
+    if (shiftActive) {
       shiftActive = false;
     }
   }
