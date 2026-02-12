@@ -6,6 +6,7 @@
 
 #include "CrossPointSettings.h"
 #include "MappedInputManager.h"
+#include "components/StatusBar.h"
 #include "components/UITheme.h"
 #include "fontIds.h"
 
@@ -141,6 +142,32 @@ void StatusBarSettingsActivity::render() {
   // Draw button hints
   const auto labels = mappedInput.mapLabels("« Back", "Toggle", "Up", "Down");
   GUI.drawButtonHints(renderer, labels.btn1, labels.btn2, labels.btn3, labels.btn4);
+
+  int orientedMarginTop, orientedMarginRight, orientedMarginBottom, orientedMarginLeft;
+  renderer.getOrientedViewableTRBL(&orientedMarginTop, &orientedMarginRight, &orientedMarginBottom,
+                                   &orientedMarginLeft);
+  orientedMarginTop += SETTINGS.screenMargin;
+  orientedMarginLeft += SETTINGS.screenMargin;
+  orientedMarginRight += SETTINGS.screenMargin;
+  orientedMarginBottom += SETTINGS.screenMargin;
+
+  int verticalPreviewPadding = 50;
+
+  auto metrics = UITheme::getInstance().getMetrics();
+
+  // Add status bar margin
+  const bool showProgressBar = SETTINGS.statusBarProgressBar != CrossPointSettings::STATUS_BAR_PROGRESS_BAR::HIDE;
+  if (SETTINGS.statusBarChapterPageCount || SETTINGS.statusBarBookProgressPercentage || showProgressBar ||
+      SETTINGS.statusBarChapterTitle || SETTINGS.statusBarBattery) {
+    // Add additional margin for status bar if progress bar is shown
+    orientedMarginBottom += 19 - SETTINGS.screenMargin + (showProgressBar ? (metrics.bookProgressBarHeight + 1) : 0);
+  }
+
+  StatusBar::renderStatusBar(renderer, orientedMarginRight, orientedMarginBottom, orientedMarginLeft, 75, 8, 32,
+                             "Chapter 21", verticalPreviewPadding);
+
+  renderer.drawText(UI_10_FONT_ID, orientedMarginLeft,
+                    renderer.getScreenHeight() - orientedMarginBottom - 50 - 19 - 19 - 4, "Preview");
 
   renderer.displayBuffer();
 }
